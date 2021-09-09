@@ -10,26 +10,25 @@ export class ApiService {
   constructor(private httpService: HttpService) {
   }
 
-  getMarketstakData({offset, limit}: PaginationParams): Observable<AxiosResponse<ApiResponse>> {
+  getMarketstakData({ offset, limit }: PaginationParams, isLatest: boolean = false): Observable<AxiosResponse<ApiResponse>> {
     const config = {
       params: {
         access_key: process.env.API_ACCESS_KEY,
         symbols: 'AAPL,MSFT',
       },
     };
-    if (offset) {
-      config.params['offset'] = offset
+    if (offset && limit) {
+      config.params['offset'] = offset;
+      config.params['limit'] = limit;
     }
-    if (limit) {
-      config.params['limit'] = limit
-    }
+
     return this.httpService
       .get(
-        `${process.env.API_BASE_URL}/intraday`,
+        `${process.env.API_BASE_URL}/intraday${isLatest ? '/latest' : ''}`,
         config,
       )
       .pipe(
         map((res) => res.data),
-      )
+      );
   }
 }
